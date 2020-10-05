@@ -1,0 +1,7 @@
+// CIX C++ library
+// Copyright (c) Jean-Charles Lefebvre
+// SPDX-License-Identifier: MIT
+
+#pragma once
+
+#include "cix.h"

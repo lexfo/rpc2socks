@@ -1,0 +1,4 @@
+include *.rst
+recursive-include rpc2socks *
+global-exclude __pycache__
+global-exclude *.py[co]

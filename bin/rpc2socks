@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+#
+# Copyright (c) Lexfo
+# SPDX-License-Identifier: BSD-3-Clause
+
+if __name__ == "__main__":
+    import os.path
+    import sys
+
+    if not sys.flags.optimize:
+        sys.dont_write_bytecode = True
+
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "cli"))
+
+    import rpc2socks.cmd.rpc2socks as rpc2socks_cmd
+
+    sys.exit(rpc2socks_cmd.main())

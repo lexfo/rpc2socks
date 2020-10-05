@@ -1,0 +1,29 @@
+
+# [cli] python auto-generated files
+/cli/build/
+/cli/dist/
+__pycache__/
+*.egg-info/
+*.pyc
+
+# [svc] build files
+/svc/_bin/
+/svc/_build/
+
+# [svc] visual studio
+.vs/
+*.vcxproj.user
+
+# sublimetext
+*.sublime-workspace
+
+# vscode
+.vscode/
+
+# system cache
+.DS_Store
+Thumbs.db
+
+# development and test files
+/tmp/
+/t.*

@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D3412A41-CC63-4070-9542-C3859319ED57}") = "rpc2socks", "prj\msvc\rpc2socks.vcxproj", "{0253614D-DA87-4BB9-90CD-A9BAF51B575E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		ConDebug|x64 = ConDebug|x64
+		ConDebug|x86 = ConDebug|x86
+		SvcDebug|x64 = SvcDebug|x64
+		SvcDebug|x86 = SvcDebug|x86
+		ConRelease|x64 = ConRelease|x64
+		ConRelease|x86 = ConRelease|x86
+		SvcRelease|x64 = SvcRelease|x64
+		SvcRelease|x86 = SvcRelease|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.ConDebug|x64.ActiveCfg = ConDebug|x64
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.ConDebug|x64.Build.0 = ConDebug|x64
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.ConDebug|x86.ActiveCfg = ConDebug|Win32
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.ConDebug|x86.Build.0 = ConDebug|Win32
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.SvcDebug|x64.ActiveCfg = SvcDebug|x64
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.SvcDebug|x64.Build.0 = SvcDebug|x64
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.SvcDebug|x86.ActiveCfg = SvcDebug|Win32
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.SvcDebug|x86.Build.0 = SvcDebug|Win32
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.ConRelease|x64.ActiveCfg = ConRelease|x64
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.ConRelease|x64.Build.0 = ConRelease|x64
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.ConRelease|x86.ActiveCfg = ConRelease|Win32
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.ConRelease|x86.Build.0 = ConRelease|Win32
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.SvcRelease|x64.ActiveCfg = SvcRelease|x64
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.SvcRelease|x64.Build.0 = SvcRelease|x64
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.SvcRelease|x86.ActiveCfg = SvcRelease|Win32
+		{0253614D-DA87-4BB9-90CD-A9BAF51B575E}.SvcRelease|x86.Build.0 = SvcRelease|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

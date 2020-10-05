@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="ConDebug|Win32">
+      <Configuration>ConDebug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="SvcDebug|Win32">
+      <Configuration>SvcDebug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ConRelease|Win32">
+      <Configuration>ConRelease</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="SvcRelease|Win32">
+      <Configuration>SvcRelease</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ConDebug|x64">
+      <Configuration>ConDebug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="SvcDebug|x64">
+      <Configuration>SvcDebug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ConRelease|x64">
+      <Configuration>ConRelease</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="SvcRelease|x64">
+      <Configuration>SvcRelease</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0253614D-DA87-4BB9-90CD-A9BAF51B575E}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='ConDebug'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='SvcDebug'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='ConRelease'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='SvcRelease'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="meta\base.props" />
+    <Import Project="meta\windows.props" />
+    <Import Project="meta\runtime_static.props" />
+    <Import Project="meta\debugger.props" />
+    <Import Project="meta\pch_use.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <TargetName>$(ProjectName.ToLower())$(PlatformArchitecture)$(Configuration.ToLower().Substring(0, 3))$(MyTargetSuffix)</TargetName>
+    <LocalDebuggerCommand>$(MyBinRoot)\$(TargetName).exe</LocalDebuggerCommand>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CIX_OVERRIDE_ASSERT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CIX_ENABLE_WIN_NAMEDPIPE_SERVER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\src\pch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\vendor\cix\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Condition="$(Configuration.StartsWith('Svc'))">
+      <PreprocessorDefinitions>APP_ENABLE_SERVICE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>%(AdditionalDependencies);ws2_32.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\pch\pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vendor\cix\src\crc32.cpp" />
+    <ClCompile Include="..\..\src\vendor\cix\src\fmt\format.cc" />
+    <ClCompile Include="..\..\src\vendor\cix\src\fmt\os.cc" />
+    <ClCompile Include="..\..\src\vendor\cix\src\memstream.cpp" />
+    <ClCompile Include="..\..\src\vendor\cix\src\monotonic.cpp" />
+    <ClCompile Include="..\..\src\vendor\cix\src\random.cpp" />
+    <ClCompile Include="..\..\src\vendor\cix\src\thread.cpp" />
+    <ClCompile Include="..\..\src\vendor\cix\src\win_console.cpp" />
+    <ClCompile Include="..\..\src\vendor\cix\src\win_namedpipe_server.cpp" />
+    <ClCompile Include="..\..\src\vendor\cix\src\win_recursive_mutex.cpp" />
+    <ClCompile Include="..\..\src\vendor\cix\src\win_thread.cpp" />
+    <ClCompile Include="..\..\src\vendor\cix\src\wstr.cpp" />
+    <ClCompile Include="..\..\src\fdset.cpp" />
+    <ClCompile Include="..\..\src\inet_ntop.cpp" />
+    <ClCompile Include="..\..\src\logging.cpp" />
+    <ClCompile Include="..\..\src\main.cpp" />
+    <ClCompile Include="..\..\src\protocol.cpp" />
+    <ClCompile Include="..\..\src\socketio.cpp" />
+    <ClCompile Include="..\..\src\socks_proxy.cpp" />
+    <ClCompile Include="..\..\src\svc.cpp" />
+    <ClCompile Include="..\..\src\svc_worker.cpp" />
+    <ClCompile Include="..\..\src\utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\assert.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\best_fit.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\circular.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\cix.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\cix_config.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\cix_external_headers.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\cix_fmt.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\crc32.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\detail\ensure_cix.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\detail\intro.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\detail\outro.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\endian.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\enumbitops.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\exceptions.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\lock_guard.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\macros.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\memstream.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\memstream.inl.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\memstreambuf.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\monotonic.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\monotonic.inl.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\noncopyable.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\path.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\path.inl.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\platform.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\random.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\std_utils.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\string.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\string.inl.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\thread.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\vendor\fmt\chrono.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\vendor\fmt\color.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\vendor\fmt\compile.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\vendor\fmt\core.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\vendor\fmt\format-inl.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\vendor\fmt\format.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\vendor\fmt\locale.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\vendor\fmt\os.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\vendor\fmt\ostream.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\vendor\fmt\posix.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\vendor\fmt\printf.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\vendor\fmt\ranges.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\win_console.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\win_deleters.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\win_namedpipe_server.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\win_recursive_mutex.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\win_thread.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\win_thread.inl.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\wstr.h" />
+    <ClInclude Include="..\..\src\vendor\cix\include\cix\wstr.inl.h" />
+    <ClInclude Include="..\..\src\constants.h" />
+    <ClInclude Include="..\..\src\fdset.h" />
+    <ClInclude Include="..\..\src\inet_ntop.h" />
+    <ClInclude Include="..\..\src\logging.h" />
+    <ClInclude Include="..\..\src\logging.inl.h" />
+    <ClInclude Include="..\..\src\main.h" />
+    <ClInclude Include="..\..\src\protocol.h" />
+    <ClInclude Include="..\..\src\socketio.h" />
+    <ClInclude Include="..\..\src\socks_proxy.h" />
+    <ClInclude Include="..\..\src\svc.h" />
+    <ClInclude Include="..\..\src\svc_worker.h" />
+    <ClInclude Include="..\..\src\utils.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

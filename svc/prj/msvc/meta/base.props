@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Label="UserMacros">
+
+    <!-- Typically "x64" or "x86", lowercased -->
+    <MyPlatformArchitecture>$(PlatformShortName.ToLower())</MyPlatformArchitecture>
+
+    <!-- *Configuration* value, lowercased -->
+    <MyBuildConfig>$(Configuration.ToLower())</MyBuildConfig>
+
+    <!-- *Configuration* value, lowercased, and mapped to "debug" or "release" -->
+    <MyBuildConfigCategory>Unsupported_Configuration_Value_$(MyBuildConfig)</MyBuildConfigCategory>
+    <MyBuildConfigCategory Condition="$(MyBuildConfig.Contains('debug'))">debug</MyBuildConfigCategory>
+    <MyBuildConfigCategory Condition="$(MyBuildConfig.Contains('release'))">release</MyBuildConfigCategory>
+
+    <!-- We want a file name suffix in Debug configuration -->
+    <MyTargetSuffix></MyTargetSuffix>
+    <MyTargetSuffix Condition="'$(ConfigurationType)|$(MyBuildConfigCategory)'=='Application|debug'">-d</MyTargetSuffix>
+    <!-- <MyTargetSuffix Condition="'$(ConfigurationType)|$(MyBuildConfigCategory)'=='StaticLibrary|debug'">-d</MyTargetSuffix> -->
+    <!-- <MyTargetSuffix Condition="'$(ConfigurationType)|$(MyBuildConfigCategory)'=='DynamicLibrary|debug'">-d</MyTargetSuffix> -->
+
+    <!-- Project's Physical Structure -->
+    <MyRootDir>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)\..\..\..))</MyRootDir>
+    <MyBinRoot>$(MyRootDir)\_bin</MyBinRoot>
+    <MyBuildRoot>$(MyRootDir)\_build</MyBuildRoot>
+    <MyDepsDir>$(MyRootDir)\deps</MyDepsDir>
+    <MySourceDir>$(MyRootDir)\src</MySourceDir>
+
+    <MyProjectIntDir>$(MyBuildRoot)\$(ProjectName)\$(MyPlatformArchitecture)\$(MyBuildConfig)</MyProjectIntDir>
+    <MyProjectOutDir>$(MyProjectIntDir)\bin</MyProjectOutDir>
+
+    <MyProjectBuildPropsBatchFile>$(MyProjectIntDir)\_my_build_vars_.cmd</MyProjectBuildPropsBatchFile>
+
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IntDir>$(MyProjectIntDir)\</IntDir>
+    <OutDir>$(MyProjectOutDir)\</OutDir>
+    <TargetName>$(ProjectName.ToLower())$(MyTargetSuffix)</TargetName>
+    <LinkIncremental>false</LinkIncremental>
+    <!-- <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck> -->
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MyBuildConfigCategory)'=='debug'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MyBuildConfigCategory)'=='release'">
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+
+      <!-- enforce C++ conformance -->
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData> <!-- /Zc:inline -->
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules> <!-- /Zc:rvalueCast -->
+      <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
+      <!-- <AdditionalOptions>/volatile:iso %(AdditionalOptions)</AdditionalOptions> -->
+
+      <!-- tend towards C++17 -->
+      <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+
+    <ClCompile Condition="'$(MyBuildConfigCategory)'=='debug'">
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRTDBG_MAP_ALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+
+    <ClCompile Condition="'$(MyBuildConfigCategory)'=='release'">
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>  <!-- None, Size, Speed -->
+      <Optimization>MinSpace</Optimization>  <!-- MinSpace, MaxSpeed, Full -->
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <StringPooling>true</StringPooling>
+    </ClCompile>
+
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
+
+    <Lib Condition="'$(MyBuildConfigCategory)'=='release'">
+      <!--
+        /LTCG must be specified if WholeProgramOptimization is true.
+        Also defined in <Link> below.
+      -->
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+    </Lib>
+
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+    </Link>
+
+    <Link Condition="'$(MyBuildConfigCategory)'=='release'">
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkIncremental>false</LinkIncremental>
+      <OptimizeReferences>true</OptimizeReferences>
+
+      <!--
+        /LTCG must be specified if WholeProgramOptimization is true.
+        See <Lib> above for more info.
+      -->
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+
+  </ItemDefinitionGroup>
+
+
+
+  <!--
+    MyPreBuild
+    See: Microsoft.BuildSteps.Targets
+  -->
+  <Target
+      Name="MyPreBuild"
+      AfterTargets="PrepareForBuild"
+      BeforeTargets="BuildGenerateSources">
+    <!-- <Message Text=" +++ Pre-Build tasks ($(ProjectName))" Importance="high" /> -->
+    <CallTarget Targets="WriteBuildProperties" />
+    <Exec
+      Command="&quot;$(ProjectDir)$(ProjectName).PreBuild.cmd&quot; &quot;$(MyProjectBuildPropsBatchFile)&quot;"
+      Condition="Exists('$(ProjectDir)$(ProjectName).PreBuild.cmd')"
+      WorkingDirectory="$(ProjectDir)"
+      IgnoreExitCode="false" />
+    <!-- <Message Text=" +++ END" Importance="high" /> -->
+  </Target>
+
+  <!--
+    MyPreLink
+    See: Microsoft.BuildSteps.Targets
+  -->
+  <Target
+      Name="MyPreLink"
+      AfterTargets="BuildCompile"
+      BeforeTargets="BuildLink">
+    <!-- <Message Text=" +++ Pre-Link tasks ($(ProjectName))" Importance="high" /> -->
+    <Exec
+      Command="&quot;$(ProjectDir)$(ProjectName).PreLink.cmd&quot; &quot;$(MyProjectBuildPropsBatchFile)&quot;"
+      Condition="Exists('$(ProjectDir)$(ProjectName).PreLink.cmd')"
+      WorkingDirectory="$(ProjectDir)"
+      IgnoreExitCode="false" />
+    <!-- <Message Text=" +++ END" Importance="high" /> -->
+  </Target>
+
+  <!--
+    MyAfterBuild
+    See: Microsoft.BuildSteps.Targets
+  -->
+  <Target
+      Name="MyAfterBuild"
+      AfterTargets="AfterBuild"
+      BeforeTargets="FinalizeBuildStatus">
+    <!-- <Message Text=" +++ Post-Build tasks ($(ProjectName))" Importance="high" /> -->
+    <Exec
+      Command="&quot;$(ProjectDir)$(ProjectName).PostBuild.cmd&quot; &quot;$(MyProjectBuildPropsBatchFile)&quot;"
+      Condition="Exists('$(ProjectDir)$(ProjectName).PostBuild.cmd')"
+      WorkingDirectory="$(ProjectDir)"
+      IgnoreExitCode="false" />
+    <!-- <Message Text=" +++ END" Importance="high" /> -->
+  </Target>
+
+
+  <!--
+    WriteBuildProperties
+
+    Write a batch file that exposes some chosen properties of the current
+    project.
+
+    IMPORTANT: values must be kept fully expanded since the generated file might
+    also be parsed by Python scripts.
+  -->
+  <Target Name="WriteBuildProperties">
+    <Message Text="Writing project properties ($(ProjectName))" Importance="high" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Overwrite="true" Lines="" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set PROJECT_DISPLAY_NAME=$(ProjectName)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set PROJECT_NAME=$(ProjectName.ToLower())" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="rem" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set BUILD_ARCH=$(MyPlatformArchitecture)" /> <!-- "x64" or "x86", always lowercased -->
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set BUILD_ARCH_BITNESS=$(PlatformArchitecture)" /> <!-- "32" or "64" -->
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set BUILD_CONFIG=$(MyBuildConfig)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set BUILD_CONFIG_CATEGORY=$(MyBuildConfigCategory)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set BUILD_INT_DIR=$(MyProjectIntDir)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set BUILD_OUT_DIR=$(MyProjectOutDir)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set BUILD_OUT_BASENAME=$(TargetFileName)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set BUILD_OUT_BASENAME_NOEXT=$(TargetName)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set BUILD_VCPROJ_DIR=$(ProjectDir)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set BUILD_VCSOLUTION_DIR=$(SolutionDir)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="rem" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set DIR_ROOT=$(MyRootDir)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set DIR_BIN=$(MyBinRoot)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set DIR_DEPS=$(MyDepsDir)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set DIR_REDIST=$(MyRootDir)\redist" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set DIR_SRC=$(MySourceDir)" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set DIR_TOOLS=$(MyRootDir)\tools" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="rem" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set VC_TOOLSET_VERSION=$(PlatformToolsetVersion)" />
+    <!-- <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set VC_INSTALL_DIR=$(VCInstallDir)" /> -->
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set VC_REDIST_CRT_DIR=$(VCInstallDir)Redist\MSVC\$(VCToolsRedistVersion)\$(PlatformShortName)\Microsoft.VC$(PlatformToolsetVersion).CRT" /> <!-- e.g. C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.15.26706\x64\Microsoft.VC141.CRT -->
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set VC_REDIST_UCRT_DIR=$(UniversalCRTSdkDir)Redist\$(TargetUniversalCRTVersion)\ucrt\DLLs\$(PlatformShortName)" /> <!-- e.g. C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs -->
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="rem" />
+    <WriteLinesToFile File="$(MyProjectBuildPropsBatchFile)" Lines="set PYTHON=$(MyRootDir)\tools\python.cmd" />
+  </Target>
+
+</Project>
