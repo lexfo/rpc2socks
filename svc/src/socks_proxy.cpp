@@ -408,7 +408,7 @@ bool socks_proxy::handle_socks_request__needcmd(
             // fall through
 
         case socks_addr_ipv4:
-            if (packet.size() >= required_min_len)
+            if (packet.size() > required_min_len)
             {
                 assert(0);
                 reply_code = socks_reply_general_failure;
